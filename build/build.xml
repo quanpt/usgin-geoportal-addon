@@ -111,8 +111,8 @@
 		<copy file='${template.dir}/metadata/iso-19115-to-usgin-19115-data.xslt' tofile='${classes.dir}/gpt/metadata/iso/usgin/iso-19115-to-usgin-19115-data.xslt'/>
 		
 		<!-- Adjust the property-meanings.xml document - Adds service-specific url meanings and applies them to Dublin Core ouptuts -->
-		<patch patchfile="${template.dir}/metadata/usgin-property-meanings.patch" originalfile="${classes.dir}/gpt/metadata/property-meanings.xml" />
-		
+		<!--<patch patchfile="${template.dir}/metadata/usgin-property-meanings.patch" originalfile="${classes.dir}/gpt/metadata/property-meanings.xml" />
+		-->
 		<!-- Adjust gpt.properties document - Adds some silly labels to be used elsewhere in the app -->
 		<copy file='${template.dir}/usgin.gpt.properties' tofile='${classes.dir}/gpt/resources/gpt.properties'  overwrite="true"/>
 	<!--	<patch patchfile="${template.dir}/metadata/gpt.properties.new.patch" originalfile="${classes.dir}/gpt/resources/gpt.properties" /> -->
@@ -347,5 +347,41 @@
 			  update="true"
 			  war="${build.dir}/geoportal.war"/>
 
+	</target>
+	
+	<!-- quanpt -->
+	<target name="local.deploy" depends="clean, local.package, war" description="Install to local Tomcat server">
+		
+		<deploy url="${local.tomcat.manager.url}"
+			username="${local.tomcat.manager}"
+			password="${local.tomcat.manager.password}"
+			path="/${local.geoportal.path}"
+			update="true"
+			war="${build.dir}/geoportal.war"/>
+	</target>
+	<target name="local.package" depends='dist' description="Perform replacements in config files for a local install">
+	  
+	  <!-- Copy the context-template file and replace variables with values from local.properties -->	  
+	  <copy file='${template.dir}/usgin-context-template.xml' tofile='${build.dir}/META-INF/context.xml'/>	
+	  <replace file='${build.dir}/META-INF/context.xml' token='$(db.connection.string)' value='${local.db.connection.string}' />
+	  <replace file='${build.dir}/META-INF/context.xml' token='$(db.user.name)' value='${local.db.user.name}' />
+	  <replace file='${build.dir}/META-INF/context.xml' token='$(db.user.password)' value='${local.db.user.password}' />
+	  
+	  <!-- Copy the gpt-template file and replace variables with values from local.properties -->	  
+	  <copy file='${template.dir}/quanpt-gpt-template.xml' tofile='${classes.dir}/gpt/config/gpt.xml'/>
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.connection.string)' value='${local.ldap.connection.string}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(lucene.index.location)' value='${local.lucene.index.location}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(lucene.rating.location)' value='${local.lucene.rating.location}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.host)' value='${mail.host}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.port)' value='${mail.port}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.emailAddress)' value='${mail.emailAddress}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.username)' value='${mail.username}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.password)' value='${mail.password}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(admin.name)' value='${local.admin.name}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(admin.password)' value='${local.admin.password}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.dc)' value='${local.ldap.dc}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.adminpasswd)' value='${local.ldap.adminpasswd}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.groups.ou)' value='${local.ldap.groups.ou}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.users.ou)' value='${local.ldap.users.ou}' />
 	</target>
 </project>

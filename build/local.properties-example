@@ -26,6 +26,12 @@ local.db.user.password=secret
 local.admin.name=adminuser
 local.admin.password=secret
 
+# LDAP
+local.ldap.dc=dc=nodomain
+local.ldap.adminpasswd=secret
+local.ldap.groups.ou=ou=groups,dc=nodomain
+local.ldap.users.ou=ou=users,dc=nodomain
+
 # SMTP information -- shared by local/remote deployments... #
 mail.host=mail.place.com
 mail.port=25
@@ -51,3 +57,9 @@ remote.db.user.password=secret
 # Username / Password for Geoportal login for your remote environment #
 remote.admin.name=adminuser
 remote.admin.password=secret
+
+# LDAP
+remote.ldap.dc=dc=geoportal
+remote.ldap.adminpasswd=secret
+remote.ldap.groups.ou=ou=groups,dc=geoportal
+remote.ldap.users.ou=ou=users,dc=geoportal
