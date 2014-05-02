@@ -9,7 +9,8 @@
 	<property name="jar.dir"       value="${build.dir}/jar"/>
 	<property name='www.dir'       value='../../www'/>	
 	<property name='template.dir'  value='templates'/>
-	<property name='ui.dir'		   value='ui'/>
+	<property name='ui.dir'        value='ui'/>
+	<property name='debug'         value='true'/>
 	
 	<!-- =========================================================================================== -->
 	<!-- Include the ant tasks required to manage the project's Tomcat web application.  These tasks -->
@@ -59,7 +60,8 @@
 	  <javac srcdir="${src.dir}"
 			 destdir="${classes.dir}"
 			 classpathref="project.classpath"
-			 includeantruntime='false'/>
+			 includeantruntime='false'
+			 debug="on"/>
 
 	</target>
 	
@@ -350,7 +352,7 @@
 	</target>
 	
 	<!-- quanpt -->
-	<target name="local.deploy" depends="clean, local.package, war" description="Install to local Tomcat server">
+	<target name="local.deploy" depends="local.package, war" description="Install to local Tomcat server">
 		
 		<deploy url="${local.tomcat.manager.url}"
 			username="${local.tomcat.manager}"
@@ -359,6 +361,7 @@
 			update="true"
 			war="${build.dir}/geoportal.war"/>
 	</target>
+	
 	<target name="local.package" depends='dist' description="Perform replacements in config files for a local install">
 	  
 	  <!-- Copy the context-template file and replace variables with values from local.properties -->	  
@@ -383,5 +386,31 @@
 	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.adminpasswd)' value='${local.ldap.adminpasswd}' />
 	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.groups.ou)' value='${local.ldap.groups.ou}' />
 	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.users.ou)' value='${local.ldap.users.ou}' />
+	</target>
+	
+	<target name="remote.package" depends='dist' description="Perform replacements in config files for a remote install">
+	  
+	  <!-- Copy the context-template file and replace variables with values from local.properties -->	  
+	  <copy file='${template.dir}/usgin-context-template.xml' tofile='${build.dir}/META-INF/context.xml'/>	
+	  <replace file='${build.dir}/META-INF/context.xml' token='$(db.connection.string)' value='${remote.db.connection.string}' />
+	  <replace file='${build.dir}/META-INF/context.xml' token='$(db.user.name)' value='${remote.db.user.name}' />
+	  <replace file='${build.dir}/META-INF/context.xml' token='$(db.user.password)' value='${remote.db.user.password}' />
+	  
+	  <!-- Copy the gpt-template file and replace variables with values from local.properties -->	  
+	  <copy file='${template.dir}/quanpt-gpt-template.xml' tofile='${classes.dir}/gpt/config/gpt.xml'/>
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.connection.string)' value='${remote.ldap.connection.string}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(lucene.index.location)' value='${remote.lucene.index.location}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(lucene.rating.location)' value='${remote.lucene.rating.location}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.host)' value='${mail.host}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.port)' value='${mail.port}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.emailAddress)' value='${mail.emailAddress}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.username)' value='${mail.username}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(mail.password)' value='${mail.password}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(admin.name)' value='${remote.admin.name}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(admin.password)' value='${remote.admin.password}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.dc)' value='${remote.ldap.dc}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.adminpasswd)' value='${remote.ldap.adminpasswd}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.groups.ou)' value='${remote.ldap.groups.ou}' />
+	  <replace file='${classes.dir}/gpt/config/gpt.xml' token='$(ldap.users.ou)' value='${remote.ldap.users.ou}' />
 	</target>
 </project>
